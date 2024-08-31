@@ -1,14 +1,78 @@
 ﻿using PrimeService.Models;
 using Xunit;
-using static PrimeService.Tests.AssertionExamples;
 
 namespace PrimeService.Tests
 {
     /// <summary>
     /// アサーションマッチャー調査用クラス
+    /// <see href="https://iiweis.net/blog/csharp-xunit-assert-cheat-sheet/"/>
     /// </summary>
     public class AssertionExamples
     {
+        /// <summary>
+        /// AssertEqual
+        /// </summary>
+        /// <see cref="AssertEqualOverloads"/>
+        [Fact]
+        public void AssertEqual()
+        {
+            // Assert.Equal(期待値, 実行値)
+            Assert.Equal("1", 1.ToString());
+
+            // シーケンスも比較可。
+            Assert.Equal(new[] { "1", "2", }, "1,2".Split(',')); // T[]
+            Assert.Equal(new List<string>() { "1", "2", }, "1,2".Split(',')); // IEnumerable<string>
+        }
+
+        /// <summary>
+        /// AssertStrictEqual
+        /// </summary>
+        [Fact]
+        public void AssertStrictEqual()
+        {
+            // Assert.StrictEqual(期待値, 実行値)
+            Assert.StrictEqual("1", 1.ToString());
+
+            // EqualityComparer<T>.Defaultが比較に使用されるため、
+            // Assert.Equalで比較可能だったシーケンスの要素比較は不可。
+            // 配列の場合は以下のように同一インスタンスであればパスする。
+            var texts = new string[] { "1", "2", };
+            Assert.StrictEqual(texts, texts);
+        }
+
+        [Fact]
+        public void AssertNotEqual()
+        {
+            // Assert.NotEqual(期待値, 実行値);
+            //Assert.NotEqual("1", 1.ToString());
+
+            // シーケンスも比較可。
+            Assert.NotEqual(new[] { "1", "2", }, "1,2,3".Split(',')); // T[]
+            Assert.NotEqual(new List<string>() { "1", "2", }, "1,2,3".Split(',')); // IEnumerable<string>
+        }
+
+        [Fact]
+        public async void AssertThrowsAny()
+        {
+            var zero = 0;
+
+            // ジェネリック版
+            // Assert.ThrowsAny<型>(テストコード)
+            Assert.ThrowsAny<Exception>(new Action(() => throw new ArgumentException()));
+            Assert.ThrowsAny<Exception>(() => 1 / zero);
+
+            // 非ジェネリック版
+            // 無し。
+
+
+            // 非同期ジェネリック版
+            // Assert.ThrowsAnyAsync<型>(テストコード)
+            await Assert.ThrowsAnyAsync<Exception>(() => Task.Run(() => 1 / zero));
+
+            // 非同期非ジェネリック版
+            // 無し。
+        }
+
         [Fact]
         public void DemonstrateAssertions()
         {
@@ -74,7 +138,7 @@ namespace PrimeService.Tests
             // 1. Assert.Equal(object expected, object actual)
             object obj1 = "test";
             object obj2 = "test";
-            Assert.Equal(obj1, obj2);            
+            Assert.Equal(obj1, obj2);
 
             // 2. Assert.Equal<T>(T expected, T actual)
             int num1 = 5;
@@ -120,15 +184,13 @@ namespace PrimeService.Tests
             Assert.NotEqual(person1, person2); // 異なるインスタンスなので等しくない
             Assert.Equal(person1, person3); // 同じインスタンスなので等しい
             Assert.Equal(person1, person2, new GenericComparer<Person>(x => x.Name));
+            
+            Assert.Same(person1, person3); // 同じインスタンスかどうかを比較
+            Assert.NotSame(person1, person2);
 
             var person4 = new PersonRecord { Name = "John", Age = 30 };
             var person5 = new PersonRecord { Name = "John", Age = 30 };
             Assert.Equal(person4, person5); // レコード型（C#9.0～）はプロパティの値が等しい場合、等しいと判定
-            
-            // 9. Assert.Equal<T>(T expected, T actual, string message, params object[] parameters)
-            int x = 10;
-            int y = 10;
-            //Assert.Equal(x, y, "Values should be equal. Expected: {0}, Actual: {1}", x, y);
         }
 
         /// <summary>
@@ -157,5 +219,27 @@ namespace PrimeService.Tests
                 return obj.GetHashCode();
             }
         }
+
+        [Fact]
+        public void AssertTrueFalseOverloads()
+        {
+            Assert.True(true);
+            //Assert.True(false, "custom message");
+
+            Assert.False(false);
+            //Assert.False(true, "custom message");
+        }
+
+        [Fact]
+        public void ok()
+        {
+            //float intValue = 1.0;
+            //double doubleValue = 1.0;
+
+            //Assert.Equal(intValue, doubleValue);
+            //Assert.StrictEqual(intValue, doubleValue);
+            Assert.StrictEqual("1", 1.ToString());
+        }
+
     }
 }
