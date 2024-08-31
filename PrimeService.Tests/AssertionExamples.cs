@@ -1,5 +1,6 @@
 ﻿using PrimeService.Models;
 using Xunit;
+using static PrimeService.Tests.AssertionExamples;
 
 namespace PrimeService.Tests
 {
@@ -113,15 +114,48 @@ namespace PrimeService.Tests
                 ignoreWhiteSpaceDifferences: true); // 空白の違いを無視
 
             // 8. Assert.Equal<T>(T expected, T actual, Func<T, T, bool> comparer)
-            //var person1 = new Person { Name = "John", Age = 30 };
-            //var person2 = new Person { Name = "John", Age = 30 };
-            //Assert.Equal(person1, person2);
+            var person1 = new Person { Name = "John", Age = 30 };
+            var person2 = new Person { Name = "John", Age = 30 };
+            var person3 = person1;
+            Assert.NotEqual(person1, person2); // 異なるインスタンスなので等しくない
+            Assert.Equal(person1, person3); // 同じインスタンスなので等しい
+            Assert.Equal(person1, person2, new GenericComparer<Person>(x => x.Name));
 
+            var person4 = new PersonRecord { Name = "John", Age = 30 };
+            var person5 = new PersonRecord { Name = "John", Age = 30 };
+            Assert.Equal(person4, person5); // レコード型（C#9.0～）はプロパティの値が等しい場合、等しいと判定
+            
             // 9. Assert.Equal<T>(T expected, T actual, string message, params object[] parameters)
             int x = 10;
             int y = 10;
             //Assert.Equal(x, y, "Values should be equal. Expected: {0}, Actual: {1}", x, y);
         }
 
+        /// <summary>
+        /// IEqualityComparerを実装した比較用クラス
+        /// </summary>
+        /// <see href="https://stackoverflow.com/questions/6694508/how-to-use-the-iequalitycomparer"/>
+        /// <typeparam name="T"></typeparam>
+        public class GenericComparer<T> : IEqualityComparer<T> where T : class
+        {
+            private Func<T, object> _expr { get; set; }
+
+            public GenericComparer(Func<T, object> expr)
+            {
+                this._expr = expr;
+            }
+
+            public bool Equals(T x, T y)
+            {
+                var first = _expr.Invoke(x);
+                var sec = _expr.Invoke(y);
+                return first != null && first.Equals(sec);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
     }
 }
