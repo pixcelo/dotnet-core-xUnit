@@ -241,5 +241,42 @@ namespace PrimeService.Tests
             Assert.StrictEqual("1", 1.ToString());
         }
 
+        /// <summary>
+        /// テスト用メソッド
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        private bool IsOddNumber(int number)
+        {
+            return number % 2 != 0;
+        }
+
+        private static IEnumerable<object[]> GetNumbers()
+        {
+            yield return new object[] { 5, 1, 3, 9 };
+            yield return new object[] { 7, 1, 5, 3 };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNumbers))]
+        public void AllNumbers_AreOdd_WithMemberData(int a, int b, int c, int d)
+        {
+            Assert.True(IsOddNumber(a));
+            Assert.True(IsOddNumber(b));
+            Assert.True(IsOddNumber(c));
+            Assert.True(IsOddNumber(d));
+        }
+
+        [Theory]
+        [InlineData(5, 1, 3, 9)]
+        [InlineData(7, 1, 5, 3)]
+        public void AllNumbers_AreOdd_WithMemberData2(int a, int b, int c, int d)
+        {
+            Assert.True(IsOddNumber(a));
+            Assert.True(IsOddNumber(b));
+            Assert.True(IsOddNumber(c));
+            Assert.True(IsOddNumber(d));
+        }
+
     }
 }
