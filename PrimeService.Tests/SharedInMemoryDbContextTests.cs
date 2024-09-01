@@ -31,7 +31,7 @@ namespace PrimeService.Tests
         public InMemoryDbContext Context { get; private set; }
     }
 
-    public class SharedInMemoryDbContextTests : IClassFixture<InMemoryDbContextFixture>
+    public class SharedInMemoryDbContextTests : IClassFixture<InMemoryDbContextFixture>, IDisposable
     {
         InMemoryDbContextFixture fixture;
 
@@ -42,6 +42,11 @@ namespace PrimeService.Tests
         {
             // 共有したFixtureを受け取る
             this.fixture = fixture;
+        }
+
+        public void Dispose()
+        {
+            // ...
         }
 
         [Fact]

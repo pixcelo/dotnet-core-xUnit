@@ -7,7 +7,7 @@ namespace PrimeService.Tests
     /// </summary>
     /// <remarks>
     /// 1. テストクラスのインスタンスは、テストメソッドごとに生成される
-    /// 2. テストメソッドの実行順は、ランダムとなる
+    /// 2. テストメソッドの実行順は、常に同じにはならない
     /// </remarks>
     /// <see href="https://xunit.net/docs/shared-context"/>
     public class StackTests : IDisposable
